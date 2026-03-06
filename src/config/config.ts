@@ -7,7 +7,7 @@ type Config = {
 	currentUserName: string;
 };
 
-export function setUser(name: string) {
+export async function setUser(name: string): Promise<void> {
 	const cfg: Config = readConfig();
 	cfg.currentUserName = name;
 	writeConfig(cfg);
@@ -47,8 +47,7 @@ function getConfigFilePath(): string {
 // We need to validate the object to ensure it has the correct structure.
 function validateConfig(rawConfig: any): Config {
 	const decoded = JSON.parse(rawConfig);
-	console.log(`validateConfig decoded: ${JSON.stringify(decoded)}`);
-
+	//console.log(`validateConfig decoded: ${JSON.stringify(decoded)}`);
 	const invalidConfigObject =
 		decoded === null ||
 		typeof decoded !== "object" ||

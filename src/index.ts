@@ -3,6 +3,7 @@ import {
 	CommandsRegistry,
 	handlerLogin,
 	handlerRegister,
+	handlerReset,
 	registerCommand,
 	runCommand,
 } from "./commands/commands";
@@ -11,6 +12,7 @@ async function main(): Promise<void> {
 	const cmdRegistry: CommandsRegistry = {};
 	registerCommand(cmdRegistry, "register", handlerRegister);
 	registerCommand(cmdRegistry, "login", handlerLogin);
+	registerCommand(cmdRegistry, "reset", handlerReset);
 
 	const cmdName = sliceCmdArgs()[0];
 	const cmdArgs = sliceCmdArgs().slice(1);

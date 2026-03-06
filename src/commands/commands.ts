@@ -1,5 +1,9 @@
 import { setUser } from "../config/config";
-import { createUser, getUserByName } from "../lib/db/queries/users";
+import {
+	createUser,
+	getUserByName,
+	truncateUsersTable,
+} from "../lib/db/queries/users";
 
 export type CommandsRegistry = Record<string, CommandHandler>;
 
@@ -58,6 +62,14 @@ export async function handlerRegister(
 	setUser(user.name);
 	console.log("User was created.");
 	printUserInfo(user);
+}
+
+export async function handlerReset(
+	cmdName: string,
+	...args: string[]
+): Promise<void> {
+	await truncateUsersTable();
+	console.log("Successfully reset users database");
 }
 
 // registers a new handler function with a command name

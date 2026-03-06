@@ -46,6 +46,8 @@ export async function handlerRegister(
 	const userByName = await getUserByName(usersName);
 	if (userByName) {
 		throw new Error("User with this name already exists.");
+		// console.log("User with this name already exists.");
+		// return;
 	}
 
 	const user = await createUser(usersName);

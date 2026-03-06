@@ -19,8 +19,9 @@ async function main(): Promise<void> {
 	} catch (err: unknown) {
 		if (err instanceof Error) {
 			console.error(err.message);
+		} else {
+			console.error("Something went wrong in runCommand: ", err);
 		}
-		console.error("Something went wrong in runCommand: ", err);
 		exit(1);
 	}
 	exit(0);

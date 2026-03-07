@@ -12,6 +12,12 @@ export async function setUser(name: string): Promise<void> {
 	cfg.currentUserName = name;
 	writeConfig(cfg);
 }
+
+export async function getCurrentUser(): Promise<string> {
+	const cfg: Config = readConfig();
+	return cfg.currentUserName;
+}
+
 // read json file found at:
 // ~/.gatorconfig.json
 // read from HOME directory: os.homedir

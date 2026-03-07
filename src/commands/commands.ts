@@ -1,7 +1,8 @@
-import { setUser } from "../config/config";
+import { getCurrentUser, setUser } from "../config/config";
 import {
 	createUser,
 	getUserByName,
+	getUsers,
 	truncateUsersTable,
 } from "../lib/db/queries/users";
 
@@ -62,6 +63,25 @@ export async function handlerRegister(
 	setUser(user.name);
 	console.log("User was created.");
 	printUserInfo(user);
+}
+
+// print format
+// * lane
+// * allan (current)
+// * hunter
+export async function handlerUsers(
+	cmdName: string,
+	...args: string[]
+): Promise<void> {
+	const users = await getUsers();
+	if (!users) {
+		throw new Error("Users could not be found.");
+	}
+	const loggedInUser = await getCurrentUser();
+	for (const user of users) {
+		const suffix = user.name === loggedInUser ? " (current)" : "";
+		console.log(`* ${user.name}${suffix}`);
+	}
 }
 
 export async function handlerReset(

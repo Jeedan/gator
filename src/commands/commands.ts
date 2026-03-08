@@ -1,3 +1,4 @@
+import { fetchFeed } from "src/services/fetchFeed";
 import { getCurrentUser, setUser } from "../config/config";
 import {
 	createUser,
@@ -82,6 +83,15 @@ export async function handlerUsers(
 		const suffix = user.name === loggedInUser ? " (current)" : "";
 		console.log(`* ${user.name}${suffix}`);
 	}
+}
+
+export async function handlerAgg(
+	cmdName: string,
+	...args: string[]
+): Promise<void> {
+	const response = await fetchFeed("https://www.wagslane.dev/index.xml");
+
+	console.log(JSON.stringify(response, null, 2));
 }
 
 export async function handlerReset(

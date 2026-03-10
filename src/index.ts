@@ -3,6 +3,7 @@ import {
 	CommandsRegistry,
 	handlerAddFeed,
 	handlerAgg,
+	handlerFeeds,
 	handlerLogin,
 	handlerRegister,
 	handlerReset,
@@ -19,6 +20,7 @@ async function main(): Promise<void> {
 	registerCommand(cmdRegistry, "users", handlerUsers);
 	registerCommand(cmdRegistry, "agg", handlerAgg);
 	registerCommand(cmdRegistry, "addfeed", handlerAddFeed);
+	registerCommand(cmdRegistry, "feeds", handlerFeeds);
 
 	const cmdName = sliceCmdArgs()[0];
 	const cmdArgs = sliceCmdArgs().slice(1);

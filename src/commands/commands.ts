@@ -2,12 +2,18 @@ import { fetchFeed } from "src/services/fetchFeed";
 import { getCurrentUser, setUser } from "../config/config";
 import {
 	createUser,
+	getUserById,
 	getUserByName,
 	getUsers,
 	truncateUsersTable,
 	User,
 } from "../lib/db/queries/users";
-import { createFeed, Feed } from "src/lib/db/queries/feeds";
+import {
+	createFeed,
+	Feed,
+	getFeeds,
+	getFeedsWithUser,
+} from "src/lib/db/queries/feeds";
 
 export type CommandsRegistry = Record<string, CommandHandler>;
 
@@ -110,12 +116,24 @@ export async function handlerAddFeed(
 
 	const name = args[0];
 	const url = args[1];
-	const currentUser = await getCurrentUser();
-	if (!currentUser) throw new Error("No current logged in user found");
-	const user = await getUserByName(currentUser);
-	if (!user) throw new Error("No user found");
+	const user = await getLoggedInUser();
 	const feed = await createFeed(name, url, user.id);
 	printFeed(feed, user);
+}
+
+export async function handlerFeeds(
+	cmdName: string,
+	...args: string[]
+): Promise<void> {
+	if (args.length > 0) {
+		throw new Error("Too many arguments passed to feeds");
+	}
+
+	const feedsWithUserName = await getFeedsWithUser();
+	if (feedsWithUserName.length === 0) throw new Error("No feeds found.");
+	for (const { feeds: feed, users: user } of feedsWithUserName) {
+		printFeed(feed, user);
+	}
 }
 
 export async function handlerReset(
@@ -164,6 +182,17 @@ function printUserInfo(user: {
 }
 
 export function printFeed(feed: Feed, user: User) {
-	console.log(JSON.stringify(feed, null, 2));
-	console.log(JSON.stringify(user, null, 2));
+	//console.log(JSON.stringify(feed, null, 2));
+	//console.log(JSON.stringify(user, null, 2));
+	console.log(`Feed: ${feed.name} url: ${feed.url}`);
+	console.log(`Feed created by: ${user.name}`);
+}
+
+async function getLoggedInUser(): Promise<User> {
+	const currentUser = await getCurrentUser();
+	if (!currentUser) throw new Error("No current logged in user found");
+	const user = await getUserByName(currentUser);
+	if (!user) throw new Error("No user found");
+
+	return user;
 }

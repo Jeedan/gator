@@ -1,6 +1,7 @@
 import { exit } from "node:process";
 import {
 	CommandsRegistry,
+	handlerAddFeed,
 	handlerAgg,
 	handlerLogin,
 	handlerRegister,
@@ -17,6 +18,7 @@ async function main(): Promise<void> {
 	registerCommand(cmdRegistry, "login", handlerLogin);
 	registerCommand(cmdRegistry, "users", handlerUsers);
 	registerCommand(cmdRegistry, "agg", handlerAgg);
+	registerCommand(cmdRegistry, "addfeed", handlerAddFeed);
 
 	const cmdName = sliceCmdArgs()[0];
 	const cmdArgs = sliceCmdArgs().slice(1);

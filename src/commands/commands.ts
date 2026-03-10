@@ -5,7 +5,9 @@ import {
 	getUserByName,
 	getUsers,
 	truncateUsersTable,
+	User,
 } from "../lib/db/queries/users";
+import { createFeed, Feed } from "src/lib/db/queries/feeds";
 
 export type CommandsRegistry = Record<string, CommandHandler>;
 
@@ -94,6 +96,28 @@ export async function handlerAgg(
 	console.log(JSON.stringify(response, null, 2));
 }
 
+export async function handlerAddFeed(
+	cmdName: string,
+	...args: string[]
+): Promise<void> {
+	if (args.length < 2) {
+		throw new Error("Unable to add feed, no arguments received.");
+	}
+
+	if (args.length > 2) {
+		throw new Error("Too many arguments passed to addFeed.");
+	}
+
+	const name = args[0];
+	const url = args[1];
+	const currentUser = await getCurrentUser();
+	if (!currentUser) throw new Error("No current logged in user found");
+	const user = await getUserByName(currentUser);
+	if (!user) throw new Error("No user found");
+	const feed = await createFeed(name, url, user.id);
+	printFeed(feed, user);
+}
+
 export async function handlerReset(
 	cmdName: string,
 	...args: string[]
@@ -137,4 +161,9 @@ function printUserInfo(user: {
 	console.log(
 		`User Id: ${user.id}\nName: ${user.name}\nCreated_at: ${user.createdAt}\nUpdated_at: ${user.updatedAt}`,
 	);
+}
+
+export function printFeed(feed: Feed, user: User) {
+	console.log(JSON.stringify(feed, null, 2));
+	console.log(JSON.stringify(user, null, 2));
 }

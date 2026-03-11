@@ -15,6 +15,13 @@
       "when": 1773082762250,
       "tag": "0001_clever_expediter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773256003264,
+      "tag": "0002_familiar_violations",
+      "breakpoints": true
     }
   ]
 }

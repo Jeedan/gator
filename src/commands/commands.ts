@@ -2,7 +2,6 @@ import { fetchFeed } from "src/services/fetchFeed";
 import { getCurrentUser, setUser } from "../config/config";
 import {
 	createUser,
-	getUserById,
 	getUserByName,
 	getUsers,
 	truncateUsersTable,
@@ -11,9 +10,13 @@ import {
 import {
 	createFeed,
 	Feed,
-	getFeeds,
+	getFeedsByUrl,
 	getFeedsWithUser,
 } from "src/lib/db/queries/feeds";
+import {
+	createFeedFollow,
+	getFeedFollowsForUser,
+} from "src/lib/db/queries/feed-follows";
 
 export type CommandsRegistry = Record<string, CommandHandler>;
 
@@ -118,7 +121,10 @@ export async function handlerAddFeed(
 	const url = args[1];
 	const user = await getLoggedInUser();
 	const feed = await createFeed(name, url, user.id);
-	printFeed(feed, user);
+	const feedFollow = await createFeedFollow(user.id, feed.id);
+	console.log(`Following feed: ${feedFollow.feedName}`);
+	console.log(`User Name: ${feedFollow.userName}`);
+	console.log(`Feed Name: ${feedFollow.feedName}`);
 }
 
 export async function handlerFeeds(
@@ -133,6 +139,48 @@ export async function handlerFeeds(
 	if (feedsWithUserName.length === 0) throw new Error("No feeds found.");
 	for (const { feeds: feed, users: user } of feedsWithUserName) {
 		printFeed(feed, user);
+	}
+}
+
+export async function handlerFollow(
+	cmdName: string,
+	...args: string[]
+): Promise<void> {
+	if (args.length < 1) {
+		throw new Error("No feed url provided to follow");
+	}
+
+	if (args.length > 1) {
+		throw new Error("Too many arguments passed to feeds");
+	}
+
+	// TODO
+	const feedUrl = args[0];
+	const user = await getLoggedInUser();
+	const feed = await getFeedsByUrl(feedUrl);
+	if (!feed) throw new Error(`No feed found with url: ${feedUrl}`);
+	const feedFollow = await createFeedFollow(user.id, feed.id);
+
+	console.log(`FeedFollow: ${feedFollow.feedName}`);
+	console.log(`User Name: ${feedFollow.userName}`);
+	console.log(`Feed Name: ${feedFollow.feedName}`);
+}
+
+export async function handlerFollowing(
+	cmdName: string,
+	...args: string[]
+): Promise<void> {
+	if (args.length > 0) {
+		throw new Error("Too many arguments passed to feeds");
+	}
+
+	const user = await getLoggedInUser();
+	const feedFollows = await getFeedFollowsForUser(user.id);
+	if (feedFollows.length === 0) throw new Error(`No following feeds found!`);
+
+	console.log(`${user.name} is following these feeds:`);
+	for (const feed of feedFollows) {
+		console.log(`Feed: ${feed.feedName}`);
 	}
 }
 
@@ -170,15 +218,11 @@ export async function runCommand(
 	await registry[cmdName](cmdName, ...args);
 }
 
-function printUserInfo(user: {
-	id: string;
-	name: string;
-	createdAt: Date;
-	updatedAt: Date;
-}) {
-	console.log(
-		`User Id: ${user.id}\nName: ${user.name}\nCreated_at: ${user.createdAt}\nUpdated_at: ${user.updatedAt}`,
-	);
+function printUserInfo(user: User) {
+	console.log(`User Id: ${user.id}`);
+	console.log(`Name: ${user.name}`);
+	console.log(`Created_at: ${user.createdAt}`);
+	console.log(`Updated_at: ${user.updatedAt}`);
 }
 
 export function printFeed(feed: Feed, user: User) {

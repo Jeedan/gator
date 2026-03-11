@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "..";
-import { feeds, users } from "../schema";
+import { feedFollows, feeds, users } from "../schema";
 
 export type Feed = typeof feeds.$inferSelect; // feeds is the table object in schema.ts
 
@@ -22,5 +22,27 @@ export async function getFeedsWithUser() {
 		.select()
 		.from(feeds)
 		.innerJoin(users, eq(users.id, feeds.userId));
+	return result;
+}
+
+export async function createFeedFollow(userId: string, feedId: string) {
+	const [newFeedFollow] = await db
+		.insert(feedFollows)
+		.values({ userId: userId, feedId: feedId })
+		.returning();
+
+	const [result] = await db
+		.select({
+			id: feedFollows.id,
+			createdAt: feedFollows.createdAt,
+			updatedAt: feedFollows.updatedAt,
+			feedName: feeds.name,
+			userName: users.name,
+		})
+		.from(feedFollows)
+		.where(eq(feedFollows.id, newFeedFollow.id))
+		.innerJoin(users, eq(feedFollows.userId, users.id))
+		.innerJoin(feeds, eq(feedFollows.feedId, feeds.id));
+
 	return result;
 }

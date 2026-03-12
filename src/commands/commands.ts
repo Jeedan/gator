@@ -174,8 +174,10 @@ export async function handlerFollowing(
 	}
 
 	const feedFollows = await getFeedFollowsForUser(user.id);
-	if (feedFollows.length === 0) throw new Error(`No following feeds found!`);
-
+	if (feedFollows.length === 0) {
+		console.log(`No feed follows found for this user.`);
+		return;
+	}
 	console.log(`${user.name} is following these feeds:`);
 	for (const feed of feedFollows) {
 		console.log(`Feed: ${feed.feedName}`);
@@ -194,6 +196,7 @@ export async function handlerUnfollow(
 	const feedUrl = args[0];
 	const deletedFeed = await deleteFollowFeed(user.id, feedUrl);
 	if (!deletedFeed) throw new Error("There was no feed to unfollow.");
+	console.log(`Successfully deleted feed: ${feedUrl}`);
 }
 
 export async function handlerReset(

@@ -10,11 +10,12 @@ import {
 import {
 	createFeed,
 	Feed,
-	getFeedsByUrl,
+	getFeedByUrl,
 	getFeedsWithUser,
 } from "src/lib/db/queries/feeds";
 import {
 	createFeedFollow,
+	deleteFollowFeed,
 	getFeedFollowsForUser,
 } from "src/lib/db/queries/feed-follows";
 
@@ -39,12 +40,8 @@ export async function handlerLogin(
 	cmdName: string,
 	...args: string[]
 ): Promise<void> {
-	if (args.length < 1) {
-		throw new Error("Unable to login, no arguments received.");
-	}
-
-	if (args.length > 1) {
-		throw new Error("Too many arguments passed to handerlogin.");
+	if (args.length !== 1) {
+		throw new Error(`usage: npm run start ${cmdName} <user_name>`);
 	}
 
 	const username = args[0];
@@ -63,8 +60,8 @@ export async function handlerRegister(
 	cmdName: string,
 	...args: string[]
 ): Promise<void> {
-	if (args.length < 1) {
-		throw new Error("Unable to login, no arguments received.");
+	if (args.length !== 1) {
+		throw new Error(`usage: npm run start ${cmdName} <user_name>`);
 	}
 
 	const usersName = args[0];
@@ -119,12 +116,8 @@ export async function handlerAddFeed(
 	user: User,
 	...args: string[]
 ): Promise<void> {
-	if (args.length < 2) {
-		throw new Error("Unable to add feed, no arguments received.");
-	}
-
-	if (args.length > 2) {
-		throw new Error("Too many arguments passed to addFeed.");
+	if (args.length !== 2) {
+		throw new Error(`usage: ${cmdName} <feed_name> <feed_url>`);
 	}
 
 	const name = args[0];
@@ -141,8 +134,8 @@ export async function handlerFeeds(
 	cmdName: string,
 	...args: string[]
 ): Promise<void> {
-	if (args.length > 0) {
-		throw new Error("Too many arguments passed to feeds");
+	if (args.length !== 0) {
+		throw new Error(`usage: npm run start ${cmdName}`);
 	}
 
 	const feedsWithUserName = await getFeedsWithUser();
@@ -157,16 +150,12 @@ export async function handlerFollow(
 	user: User,
 	...args: string[]
 ): Promise<void> {
-	if (args.length < 1) {
-		throw new Error("No feed url provided to follow");
-	}
-
-	if (args.length > 1) {
-		throw new Error("Too many arguments passed to feeds");
+	if (args.length !== 1) {
+		throw new Error(`usage: ${cmdName} <feed_url>`);
 	}
 
 	const feedUrl = args[0];
-	const feed = await getFeedsByUrl(feedUrl);
+	const feed = await getFeedByUrl(feedUrl);
 	if (!feed) throw new Error(`No feed found with url: ${feedUrl}`);
 	const feedFollow = await createFeedFollow(user.id, feed.id);
 
@@ -191,6 +180,20 @@ export async function handlerFollowing(
 	for (const feed of feedFollows) {
 		console.log(`Feed: ${feed.feedName}`);
 	}
+}
+
+export async function handlerUnfollow(
+	cmdName: string,
+	user: User,
+	...args: string[]
+): Promise<void> {
+	if (args.length !== 1) {
+		throw new Error(`usage: ${cmdName} <feed_url>`);
+	}
+
+	const feedUrl = args[0];
+	const deletedFeed = await deleteFollowFeed(user.id, feedUrl);
+	if (!deletedFeed) throw new Error("There was no feed to unfollow.");
 }
 
 export async function handlerReset(

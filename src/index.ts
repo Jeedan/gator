@@ -10,6 +10,7 @@ import {
 	handlerRegister,
 	handlerReset,
 	handlerUsers,
+	handlerUnfollow,
 	registerCommand,
 	runCommand,
 } from "./commands/commands";
@@ -29,6 +30,11 @@ async function main(): Promise<void> {
 		cmdRegistry,
 		"following",
 		middlewareLoggedIn(handlerFollowing),
+	);
+	registerCommand(
+		cmdRegistry,
+		"unfollow",
+		middlewareLoggedIn(handlerUnfollow),
 	);
 
 	const cmdName = sliceCmdArgs()[0];

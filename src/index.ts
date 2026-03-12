@@ -13,6 +13,7 @@ import {
 	registerCommand,
 	runCommand,
 } from "./commands/commands";
+import { middlewareLoggedIn } from "./middleware/middleware";
 
 async function main(): Promise<void> {
 	const cmdRegistry: CommandsRegistry = {};
@@ -21,10 +22,14 @@ async function main(): Promise<void> {
 	registerCommand(cmdRegistry, "login", handlerLogin);
 	registerCommand(cmdRegistry, "users", handlerUsers);
 	registerCommand(cmdRegistry, "agg", handlerAgg);
-	registerCommand(cmdRegistry, "addfeed", handlerAddFeed);
 	registerCommand(cmdRegistry, "feeds", handlerFeeds);
-	registerCommand(cmdRegistry, "follow", handlerFollow);
-	registerCommand(cmdRegistry, "following", handlerFollowing);
+	registerCommand(cmdRegistry, "addfeed", middlewareLoggedIn(handlerAddFeed));
+	registerCommand(cmdRegistry, "follow", middlewareLoggedIn(handlerFollow));
+	registerCommand(
+		cmdRegistry,
+		"following",
+		middlewareLoggedIn(handlerFollowing),
+	);
 
 	const cmdName = sliceCmdArgs()[0];
 	const cmdArgs = sliceCmdArgs().slice(1);

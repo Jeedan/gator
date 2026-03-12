@@ -20,7 +20,16 @@ import {
 
 export type CommandsRegistry = Record<string, CommandHandler>;
 
-type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
+export type CommandHandler = (
+	cmdName: string,
+	...args: string[]
+) => Promise<void>;
+
+export type UserCommandHandler = (
+	cmdName: string,
+	user: User,
+	...args: string[]
+) => Promise<void>;
 
 // if args is empty throw an error,
 // login expects a single argument 'username'
@@ -107,6 +116,7 @@ export async function handlerAgg(
 
 export async function handlerAddFeed(
 	cmdName: string,
+	user: User,
 	...args: string[]
 ): Promise<void> {
 	if (args.length < 2) {
@@ -119,7 +129,7 @@ export async function handlerAddFeed(
 
 	const name = args[0];
 	const url = args[1];
-	const user = await getLoggedInUser();
+	//const user = await getLoggedInUser();
 	const feed = await createFeed(name, url, user.id);
 	const feedFollow = await createFeedFollow(user.id, feed.id);
 	console.log(`Following feed: ${feedFollow.feedName}`);
@@ -144,6 +154,7 @@ export async function handlerFeeds(
 
 export async function handlerFollow(
 	cmdName: string,
+	user: User,
 	...args: string[]
 ): Promise<void> {
 	if (args.length < 1) {
@@ -154,9 +165,7 @@ export async function handlerFollow(
 		throw new Error("Too many arguments passed to feeds");
 	}
 
-	// TODO
 	const feedUrl = args[0];
-	const user = await getLoggedInUser();
 	const feed = await getFeedsByUrl(feedUrl);
 	if (!feed) throw new Error(`No feed found with url: ${feedUrl}`);
 	const feedFollow = await createFeedFollow(user.id, feed.id);
@@ -168,13 +177,13 @@ export async function handlerFollow(
 
 export async function handlerFollowing(
 	cmdName: string,
+	user: User,
 	...args: string[]
 ): Promise<void> {
 	if (args.length > 0) {
 		throw new Error("Too many arguments passed to feeds");
 	}
 
-	const user = await getLoggedInUser();
 	const feedFollows = await getFeedFollowsForUser(user.id);
 	if (feedFollows.length === 0) throw new Error(`No following feeds found!`);
 
@@ -232,7 +241,7 @@ export function printFeed(feed: Feed, user: User) {
 	console.log(`Feed created by: ${user.name}`);
 }
 
-async function getLoggedInUser(): Promise<User> {
+export async function getLoggedInUser(): Promise<User> {
 	const currentUser = await getCurrentUser();
 	if (!currentUser) throw new Error("No current logged in user found");
 	const user = await getUserByName(currentUser);

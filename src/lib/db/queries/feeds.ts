@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "..";
 import { feeds, users } from "../schema";
 
@@ -40,4 +40,12 @@ export async function markFeedFetched(feedId: string) {
 		.where(eq(feeds.id, feedId));
 }
 
-export async function getNextFeedToFetch() {}
+export async function getNextFeedToFetch() {
+	const [result] = await db
+		.select()
+		.from(feeds)
+		.orderBy(sql`${feeds.lastFetchedAt} asc nulls first`)
+		.limit(1);
+
+	return result;	
+}

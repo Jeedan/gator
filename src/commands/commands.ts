@@ -19,6 +19,7 @@ import {
 } from "../lib/db/queries/feed-follows";
 import { scrapeFeeds } from "../services/aggregateFeeds";
 import { parseDuration } from "../utils/utils";
+import { getPostsForUsers } from "src/lib/db/queries/posts";
 
 export type CommandsRegistry = Record<string, CommandHandler>;
 
@@ -136,6 +137,29 @@ export async function handlerAgg(
 
 async function handleError(err: unknown) {
 	console.error(err);
+}
+
+export async function handlerBrowsePosts(
+	cmdName: string,
+	user: User,
+	...args: string[]
+) {
+	if (args.length > 1) {
+		throw new Error(`usage: ${cmdName} <browse> <optional_posts_limit>`);
+	}
+
+	const limit = args[0] ? parseInt(args[0]) : 2;
+	const posts = await getPostsForUsers(user.id, limit);
+
+	if (posts.length === 0)
+		throw new Error(`No posts found by user: ${user.name}`);
+
+	for (const post of posts) {
+		console.log(`Feed: ${post.feedName}`);
+		console.log(`Title: ${post.title}`);
+		console.log(`Published At: ${post.publishedAt}`);
+		console.log("\n");
+	}
 }
 
 export async function handlerAddFeed(

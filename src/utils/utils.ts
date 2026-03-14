@@ -22,3 +22,13 @@ export function parseDuration(durationStr: string): number {
 	// else if ms
 	return value;
 }
+
+export function parseDate(dateStr: string): Date | null {
+	if (!dateStr) return null;
+	const date = new Date(dateStr);
+	if (isNaN(date.getTime())) {
+		console.log(`Could not parse date: ${dateStr}`);
+		return null;
+	}
+	return date;
+}

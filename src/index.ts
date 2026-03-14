@@ -13,6 +13,7 @@ import {
 	handlerUnfollow,
 	registerCommand,
 	runCommand,
+	handlerBrowsePosts,
 } from "./commands/commands";
 import { middlewareLoggedIn } from "./middleware/middleware";
 
@@ -35,6 +36,11 @@ async function main(): Promise<void> {
 		cmdRegistry,
 		"unfollow",
 		middlewareLoggedIn(handlerUnfollow),
+	);
+	registerCommand(
+		cmdRegistry,
+		"browse",
+		middlewareLoggedIn(handlerBrowsePosts),
 	);
 
 	const cmdName = sliceCmdArgs()[0];

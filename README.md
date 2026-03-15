@@ -1,4 +1,4 @@
-# Gator
+# gator
 In this project we build an RSS feed aggregator in Typescript. We called it "Gator" because aggreGATOR. 
 
 It is a CLI tool that allows users to:

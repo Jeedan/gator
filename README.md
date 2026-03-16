@@ -71,7 +71,11 @@ it follows this format: `postgres://username:password@host:5432/dbname`
 ## Drizzle generation and migration
 
 Use `npx drizzle-kit generate` to generate our migration files, if we don't then our tables won't exist. 
+
 Use `npx drizzle-kit migrate` to migrate the files.
+
+Once migrations are done, start by registering a user with npm run start register <username>
+
 ## Commands
 
 There are several commands you can use in the CLI here is an example of each one use `npm run start` then follow it with the command name and args:

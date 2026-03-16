@@ -20,9 +20,12 @@ cd gator
 ## Set up
 
 This project uses `22.15.0` version of node! For this we used NVM to manage the version but others work as well.
-To get things running we'll need to also install npm and the dev dependencies. Run `npm install` in the root of your project.
+To get things running we'll need to also install npm and the dev dependencies. 
+
+Run `npm install` in the root of your project.
 
 You will also need to have Postgres installed:
+
 WSL/Linux:
 ```bash
 sudo apt update

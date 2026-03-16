@@ -20,9 +20,7 @@ cd gator
 ## Set up
 
 This project uses `22.15.0` version of node! For this we used NVM to manage the version but others work as well.
-To get things running we'll need to also install npm and the dev dependencies. Run `npm init -y` in the root of your project.
-We will also need to install typescript as well as its types so that we can use it with node.
-- `npm install -D typescript @types/node tsx`
+To get things running we'll need to also install npm and the dev dependencies. Run `npm install` in the root of your project.
 
 You will also need to have Postgres installed:
 WSL/Linux:

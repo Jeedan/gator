@@ -74,7 +74,7 @@ Use `npx drizzle-kit generate` to generate our migration files, if we don't then
 
 Use `npx drizzle-kit migrate` to migrate the files.
 
-Once migrations are done, start by registering a user with npm run start register <username>
+Once migrations are done, start by registering a user with `npm run start register <username>`
 
 ## Commands
 
